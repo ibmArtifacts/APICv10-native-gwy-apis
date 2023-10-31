@@ -1,0 +1,95 @@
+swagger: '2.0'
+info:
+  title: basic-auth-decode-encode
+  x-ibm-name: basic-auth-decode-encode
+  version: 1.0.0
+x-ibm-configuration:
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - operation-switch:
+          version: 2.0.0
+          title: operation-switch
+          case:
+            - operations:
+                - verb: get
+                  path: /decode
+              execute:
+                - gatewayscript:
+                    version: 2.0.0
+                    title: gws-decode-basic-auth
+                    source: >
+                      if (context.get('request.authorization') != ''){
+                          var vDecodedBasicAuth = '"' + Buffer.from((context.get('request.authorization').split(' ').pop()), "base64") + '"' ;
+                          context.message.body.write(vDecodedBasicAuth);
+                      } else if
+                      (context.get('request.querystring').includes('auth=') ==
+                      true){
+                          var vDecodedBasicAuth = '"' + Buffer.from((context.get('request.querystring').split('auth=').pop()), "base64") + '"';
+                          context.message.body.write(vDecodedBasicAuth);
+                      } else {
+                          context.message.body.write("Seems like you didn't pass a basic-auth-header. Alternatively, you may add a query param 'auth=basic-auth-here' to decode your basic-auth if you cannot pass the auth header.");
+                      }
+                    description: >-
+                      if there is an auth header, then decode, 
+
+                      if there is no auth header, but query param includes
+                      'auth=', then take that and decode, 
+
+                      if there is no auth header or 'auth=' queryparam, then
+                      send back hint to consumer to add it.
+            - operations:
+                - verb: get
+                  path: /encode
+              execute:
+                - gatewayscript:
+                    version: 2.0.0
+                    title: gws-encode-basic-auth
+                    source: >-
+
+                      if(context.get('request.querystring').includes('user=') ==
+                      true &&
+                      context.get('request.querystring').includes('pass=') ==
+                      true){
+                          var vRawBasicAuth = context.get('request.parameters.user.values')[0] + ':' + context.get('request.parameters.pass.values')[0];
+                          context.message.body.write(Buffer(vRawBasicAuth).toString('base64'));
+                      } else {
+                          context.message.body.write('To encode, please pass query params "?user=username_here&pass=password_here"');
+                      }
+          otherwise: []
+    finally: []
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+basePath: /basic-auth
+paths:
+  /decode:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+  /encode:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+schemes:
+  - https
