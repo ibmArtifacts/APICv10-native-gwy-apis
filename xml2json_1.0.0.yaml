@@ -1,0 +1,142 @@
+swagger: '2.0'
+info:
+  x-ibm-name: xml2json
+  title: xml2json
+  version: 1.0.0
+schemes:
+  - https
+host: $(catalog.host)
+basePath: /
+consumes:
+  - application/xml
+  - application/json
+  - '*/*'
+produces:
+  - application/xml
+  - application/json
+  - '*/*'
+securityDefinitions:
+  clientIdHeader:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+security:
+  - {}
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  assembly:
+    execute:
+      - parse:
+          version: 2.1.0
+          title: parse
+          parse-settings-reference:
+            default: apic-default-parsesettings
+      - xml-to-json:
+          version: 2.0.0
+          title: xml-to-json
+      - operation-switch:
+          version: 2.0.0
+          title: operation-switch
+          case:
+            - operations:
+                - verb: post
+                  path: /xml2plainjson
+              execute:
+                - gatewayscript:
+                    version: 2.0.0
+                    title: gatewayscript
+                    source: >
+                      var util = require('util');
+
+                      var bfJson = context.get('message.body');
+
+                      //console.debug(JSON.stringify(bfJson));
+
+                      var plainJson = {};
+
+                      convertBadgerfishToPlainJSON(bfJson, plainJson );
+
+                      //console.debug(JSON.stringify(plainJson));
+
+                      context.set('message.body', plainJson);
+
+
+                      function convertBadgerfishToPlainJSON(inputDocument,
+                      outputDocument) {
+                        for (var property in inputDocument) {
+                          // namespace and attribute properties start with an @, so ignore them
+                          if (property.slice(0, 1) != '@') {
+                            // get this property's value.
+                            var propertyObj = inputDocument[property];
+                            // for namespaces, badgerfish includes the namespace property name, so strip it out 
+                            var i = property.indexOf(':');
+                            if (i >= 0) {
+                              property = property.slice(i + 1);
+                            }
+
+                            // process the property's object based on its type
+                            var type = util.safeTypeOf(propertyObj);
+                            switch (type) {
+                            case 'object':
+                              // objects, a child of $ is the property's value
+                              if(propertyObj['$']) {
+                                outputDocument[property] = propertyObj['$'];
+                              } else {
+                                // an object without a child $, this property has child objects, so recurse to convert the children
+                                outputDocument[property] = {};
+                                convertBadgerfishToPlainJSON(propertyObj,outputDocument[property])
+                              }
+                              break;
+                            case 'array':
+                              // any array, recurse to convert the array children
+                              outputDocument[property] = [];
+                              convertBadgerfishToPlainJSON(propertyObj,outputDocument[property])
+                              break;
+                            default:
+                              // don't think we should get here, but just in case, set the property to its scalar value
+                              outputDocument[property] = propertyObj;
+                              break;
+                            }
+                          }
+                        }
+                      }
+          otherwise: []
+    catch: []
+    finally: []
+  phase: realized
+  type: rest
+  gateway: datapower-api-gateway
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+paths:
+  /xml2plainjson:
+    post:
+      responses:
+        '200':
+          description: 200 OK
+      security:
+        - {}
+      parameters:
+        - $ref: '#/parameters/input'
+  /xml2json:
+    post:
+      responses:
+        '200':
+          description: 200 OK
+      parameters:
+        - $ref: '#/parameters/input'
+definitions: {}
+tags: []
+parameters:
+  input:
+    name: input
+    required: false
+    in: body
+    schema:
+      type: object
+    description: <my>xml</my>
