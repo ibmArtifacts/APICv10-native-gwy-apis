@@ -82,7 +82,7 @@ x-ibm-configuration:
                             switch (type) {
                             case 'object':
                               // objects, a child of $ is the property's value
-                              if(propertyObj['$']) {
+                              if(propertyObj['$'] !== undefined) {
                                 outputDocument[property] = propertyObj['$'];
                               } else {
                                 // an object without a child $, this property has child objects, so recurse to convert the children
