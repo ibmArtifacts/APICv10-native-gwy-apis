@@ -16,15 +16,7 @@ x-ibm-configuration:
       - gatewayscript:
           version: 2.0.0
           title: gatewayscript
-          source: >-
-            var vAPIName = context.get('api.name');
-
-            var vIP = context.get('session.localAddress');
-
-            var vOutput = '{"You_invoked_API": "' + vAPIName + '", "IP": "' +
-            vIP + '"}';
-
-            context.message.body.write(vOutput);
+          source: "let vOutput = {};\r\nvOutput.ResponseDetails = {\"APIName\":\"\"};\r\nvOutput.ResponseDetails.APIName = context.get('api.name');\r\nvOutput.ResponseDetails.GatewayIP = context.get('session.localAddress');\r\nvOutput.ResponseDetails.RequestDate = context.get('request.date');\r\nvOutput.ResponseDetails.ClientAddress = context.get('session.clientAddress');\r\nvOutput.ResponseDetails.TransactionID = context.get('session.transactionID');\r\nvOutput.ResponseDetails.GlobalTransactionID = context.get('session.globalTransactionID');\r\nvOutput.ResponseDetails.StatusCode = context.get('message.status.code');\r\n\r\ncontext.message.body.write(vOutput);\r\ncontext.message.header.set('Content-Type', \"application/json\");"
     finally: []
   properties:
     target-url:
