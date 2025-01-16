@@ -44,13 +44,14 @@ x-ibm-configuration:
             vOutput.ResponseDetails.GlobalTransactionID =
             context.get('session.globalTransactionID');
 
-            vOutput.ResponseDetails.StatusCode =
-            context.get('message.status.code');
+            vOutput.ResponseDetails.StatusCode = '200';
 
 
             context.message.body.write(vOutput);
 
             context.message.header.set('Content-Type', "application/json");
+
+            context.message.statusCode = '200 YAY'
   activity-log:
     enabled: true
     success-content: activity
