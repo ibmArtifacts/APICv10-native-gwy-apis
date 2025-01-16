@@ -1,0 +1,169 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: jwt-gen-val
+  x-ibm-name: jwt-gen-val
+servers:
+  - url: /jwt-gen-val
+x-ibm-configuration:
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - gatewayscript:
+          version: 2.0.0
+          title: gatewayscript
+          source: >-
+            context.set('iss-claim', 'apic'); 
+
+            context.set('aud-claim','ibm');
+
+            //Set the jwks if you would like to use jwks rather than crypto
+            object. You must update the jwt-gen policy to reflect this update. 
+
+            //context.set('jwks', '{ "alg": "HS256", "kty": "oct", "use": "sig",
+            "k":
+            "o5yErLaE-dbgVpSw65Rq57OA9dHyaF66Q_Et5azPa-XUjbyP0w9iRWhR4kru09aFfQLXeIODIN4uhjElYKXt8n76jt0Pjkd2pqk4t9abRF6tnL19GV4pflfL6uvVKkP4weOh39tqHt4TmkBgF2P-gFhgssZpjwq6l82fz3dUhQ2nkzoLA_CnyDGLZLd7SZ1yv73uzfE2Ot813zmig8KTMEMWVcWSDvy61F06vs_6LURcq_IEEevUiubBxG5S2akNnWigfpbhWYjMI5M22FOCpdcDBt4L7K1-yHt95Siz0QUb0MNlT_X8F76wH7_A37GpKKJGqeaiNWmHkgWdE8QWDQ",
+            "kid": "hs256-key" }');
+
+            context.set('jwk', '{ "p":
+            "wiq7c0Oore3uA5x464UZdA_gjdoKfsoC6vM7ryFqLRNASB1M9XIwHGgrWADnUkcOA1MrJ8E1VbakKh4cE3rm3X9GW14q8lGGe9mZbHXXbB_9r_UJw3QKFaijOfDjvPYK9uOZNekTzfImEuobgTof6YQk23ytcw35geYWYltNlEc",
+            "kty": "RSA", "q":
+            "r15K8X2hOp4RujMEBVKWVr0EGy8SB1xIazL3nSRtVJZTzGGsMe246NHNKorC5dCyo_GRKDuT5SB7A0CWu4dCaZQ2jH1wsLM30nfoDQvZI03s-v0ja4t-PVKP6Hxq3SsLOG-kB_yDwtxIZ6yk4N7wcMwrq01d_NiZb74M-e3sOJM",
+            "d":
+            "gcot-XbaF7CUzX4VDDdGC6nZGYW3Fk5QxrvnVsBL_2b655NY3TSYrOA2-Ua4oJygGVARGAXPST3Ua50u9nEcrcHEm33pVxjJNsyLSJJIyR-rlrS0-CFhWMbB4gEnsiYDY1S54GLS4cDhxEpSDF17jWrZXF8T3azqkyrMwY_cYbBZTmGMOGdejDKWBPUoq4DsCckapSufhXBHM6a7TnTKtA3Tetr4TaWfMZ-pXiyNcW685RTY8rVBtZl7jtJcS4bpqlEOmhxbO6OV2migbhpuM9lUcqJbNqnDnbyAt52CGWd-ZrL9aPP_wK_xRCHnk0PmzEHhphlA5nQklijGFD276Q",
+            "e": "AQAB", "use": "sig", "kid":
+            "U99fdE3jrrVgDrwjNE8VbFtWFViBROZryAodZJpwAEE", "qi":
+            "TCAbW4ULhnbeFgvZEWA2JF1v66Au-8b5pVuFSjAThb4DVhSJT6GpXd0NttjXsJTOX9nFCa8XcthGPFee1NKsTHpg1zr4rB-YlaE8UuYL1oCwtsSH1V4ztQaUFqNGuJNuNAN-awCj6h0UVnhnJSe5gdjavAW1Q03WIi3DmZqgKRU",
+            "dp":
+            "Zk1him-hllKAT4LH6z-rk40yAUtasEb7lpMlZTaz3KACBHz7qW7Kjo0MGUgQmTc62OGfIUkZMtoSUOagYFsm_JkslsNc2WO--c5CmfTU1fFdFrKCvGqNTbAWoFadh1gTmtV8Sf1OI_pruReD-miHm9-2E7bzJGW-ioSSUqxMic0",
+            "alg": "RS256", "dq":
+            "njKBiLe76hUOCNpcljCaTkTUn3Em4lztN0cS-D8UIWo6zfSOUbwRQnWAjw_-ITLS8_HG8HRORjO2xIhPcXvi_TsmujWuorgJc2OXga1eg-qYDRKuESYVC1yfVSpnfHyH8rFDV7EDa5Ur-9pSIkj6vcZw3mc8kgsS3yqiqhNnNOE",
+            "n":
+            "hQK6rCNGFsO09Sm_LK8nZP-cWgSAgB8oG4c51v2RsEkfUpwLLc9D9Hl8fscfiLIgQcexkjKlEbTP2SDHqJJuTj81-acyrPWqSIswZvuT9hL2L5MImBSIsQCw8PfpmICBrLgqKlcCUO0gmSDDULmmEcBgncn9ohb6nLQ0WKnqoSiQ6BxVR1wcQ_qwvAWEm85oAYn1i2HcZ7ySUOGna7hFToBb2bfLng__jAe_8_Ak6vE4fDfI99rio4rRZTDznt9cVGO2tEDHeJK50X7kWFEaWNWWpmaIIsm4aRYIl11jcz7GmqcPlqPXkYLAIaoqJ6YwqnOiMc8xrMXkUelM0m-sxQ"
+            }');
+
+            context.set('jwk-verify', '{ "kty": "RSA", "e": "AQAB", "use":
+            "sig", "kid": "U99fdE3jrrVgDrwjNE8VbFtWFViBROZryAodZJpwAEE", "alg":
+            "RS256", "n":
+            "hQK6rCNGFsO09Sm_LK8nZP-cWgSAgB8oG4c51v2RsEkfUpwLLc9D9Hl8fscfiLIgQcexkjKlEbTP2SDHqJJuTj81-acyrPWqSIswZvuT9hL2L5MImBSIsQCw8PfpmICBrLgqKlcCUO0gmSDDULmmEcBgncn9ohb6nLQ0WKnqoSiQ6BxVR1wcQ_qwvAWEm85oAYn1i2HcZ7ySUOGna7hFToBb2bfLng__jAe_8_Ak6vE4fDfI99rio4rRZTDznt9cVGO2tEDHeJK50X7kWFEaWNWWpmaIIsm4aRYIl11jcz7GmqcPlqPXkYLAIaoqJ6YwqnOiMc8xrMXkUelM0m-sxQ"
+            }')
+
+
+            var appName = context.get('client.app.name'); 
+
+            //console.log('****appName: ' + appName);
+
+
+            if(appName!=null) {
+              var msg =  {"app_name":appName};
+              context.set('pvt-claim', msg);
+            } else {
+              var msg =  {"app_name":"AppNotFOund"};
+              context.set('pvt-claim', msg);
+            }
+
+            console.log('****[Completed-setting-all-variables-and-appName]****');
+      - operation-switch:
+          version: 2.0.0
+          title: operation-switch
+          case:
+            - operations:
+                - verb: get
+                  path: /gen
+              execute:
+                - jwt-generate:
+                    version: 2.1.0
+                    title: jwt-generate
+                    jwt: generated.jwt
+                    iss-claim: iss-claim
+                    exp-claim: 2
+                    aud-claim: aud-claim
+                    private-claims: pvt-claim
+                    jws-jwk: jwk
+                    jws-alg: RS256
+                - gatewayscript:
+                    version: 2.0.0
+                    title: gatewayscript
+                    source: |-
+                      let vJWT = context.get('generated.jwt');
+                      context.message.body.write(vJWT);
+            - operations:
+                - verb: get
+                  path: /val
+              execute:
+                - jwt-validate:
+                    version: 2.0.0
+                    title: jwt-validate
+                    jwt: request.headers.authorization
+                    output-claims: decoded.claims
+                    iss-claim: apic
+                    jwe-jwk: ''
+                    jws-jwk: jwk-verify
+                - gatewayscript:
+                    version: 2.0.0
+                    title: gatewayscript
+                    source: >-
+                      let vDecodedClaims = context.get('decoded.claims');
+
+                      context.message.body.write(vDecodedClaims);
+
+                      context.message.header.set('Content-Type',
+                      "application/json");
+          otherwise: []
+    catch:
+      - errors:
+          - RuntimeError
+        execute:
+          - gatewayscript:
+              version: 2.0.0
+              title: gatewayscript
+              source: "var vJWTError = context.get('jwt-validate.error-message');\r\nconsole.log('****vJWTError: ' + vJWTError);\r\ncontext.message.body.write(vJWTError);\r\ncontext.message.header.set('Content-Type', \"application/json\");\r\ncontext.message.statusCode = '500 JWT-Error'; "
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+paths:
+  /gen:
+    get:
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: string
+  /val:
+    get:
+      responses:
+        '200':
+          description: success
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            title: authorization
+            type: string
+            format: >-
+              Bearer
+              eyJraWQiOiJVOTlmZEUzanJyVmdEcndqTkU4VmJGdFdGVmlCUk9acnlBb2RaSnB3QUVFIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJhcGljIiwiYXVkIjoiY2FuYWRhcG9zdCIsImV4cCI6MTczNzA1MDYwMywiaWF0IjoxNzM3MDQ3MDAzLCJhcHBfbmFtZSI6InNhbmRib3gtdGVzdC1hcHAifQ.YYuhgZrKvqZKbwO0eEORCR17DmBdmhAUCRlOpFgHTMiyijxjpLHQEPpsaMFU2Kz2K7qyb3H31eups-k_5a819UNxDsjCdpU9zScADICoWl4CpwcD2Y5GQ5mo7a5SQULRP7WqGYm8Z2Y2dRcy5nAQ8Oeq7y1GARHbXsKt-wU_PJ26X6jS_Kep2YxqiT1ue5U_fWxCwOASAlbIuHN7JdnJmKXK1xICvaw8l4YWZqM81mfaiDfz1naHoNEYtAVxmxs3rgtkTFYTFvWWgOpg_N-OH0CFp0uOcczIXqnEgIvc6-WVP_-EDKS4DjFstRfadIbhHQYgw7cxxuJxUJEZ_wtZ8g
+components:
+  securitySchemes:
+    clientid:
+      type: apiKey
+      x-key-type: client_id
+      name: X-IBM-Client-Id
+      in: header
+security:
+  - clientid: []
