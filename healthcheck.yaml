@@ -1,9 +1,16 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
+  version: 1.0.0
   title: healthcheck
   x-ibm-name: healthcheck
-  version: 1.0.0
+servers:
+  - url: /healthcheck
 x-ibm-configuration:
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
   cors:
     enabled: true
   gateway: datapower-api-gateway
@@ -16,70 +23,94 @@ x-ibm-configuration:
       - gatewayscript:
           version: 2.0.0
           title: gatewayscript
-          source: |-
-            var vAPIName = context.get('api.name');
-            var vOutput = '{"You_invoked_API": ' + vAPIName + '"}';
+          source: >-
+            let vOutput = {};
+
+            vOutput.ResponseDetails = {"APIName":""};
+
+            vOutput.ResponseDetails.APIName = context.get('api.name');
+
+            vOutput.ResponseDetails.GatewayIP =
+            context.get('session.localAddress');
+
+            vOutput.ResponseDetails.RequestDate = context.get('request.date');
+
+            vOutput.ResponseDetails.ClientAddress =
+            context.get('session.clientAddress');
+
+            vOutput.ResponseDetails.TransactionID =
+            context.get('session.transactionID');
+
+            vOutput.ResponseDetails.GlobalTransactionID =
+            context.get('session.globalTransactionID');
+
+            vOutput.ResponseDetails.StatusCode =
+            context.get('message.status.code');
+
+
             context.message.body.write(vOutput);
-    finally: []
-  properties:
-    target-url:
-      value: http://example.com/operation-name
-      description: The URL of the target service
-      encoded: false
+
+            context.message.header.set('Content-Type', "application/json");
   activity-log:
     enabled: true
     success-content: activity
     error-content: payload
-basePath: /healthcheck
 paths:
   /:
     get:
       responses:
         '200':
           description: success
-          schema:
-            type: string
-      consumes: []
-      produces: []
+          content:
+            application/json:
+              schema:
+                type: string
     put:
       responses:
         '200':
           description: success
-          schema:
-            type: string
-      consumes: []
-      produces: []
+          content:
+            application/json:
+              schema:
+                type: string
     post:
       responses:
         '200':
           description: success
-          schema:
-            type: string
-      consumes: []
-      produces: []
+          content:
+            application/json:
+              schema:
+                type: string
     delete:
       responses:
         '200':
           description: success
-          schema:
-            type: string
-      consumes: []
-      produces: []
+          content:
+            application/json:
+              schema:
+                type: string
     head:
       responses:
         '200':
           description: success
-          schema:
-            type: string
-      consumes: []
-      produces: []
+          content:
+            application/json:
+              schema:
+                type: string
     patch:
       responses:
         '200':
           description: success
-          schema:
-            type: string
-      consumes: []
-      produces: []
-schemes:
-  - https
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    client-id:
+      type: apiKey
+      x-key-type: client_id
+      name: X-IBM-Client-Id
+      in: header
+security:
+  - client-id: []
